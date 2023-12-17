@@ -1,28 +1,15 @@
 import streamlit as st
-import torch
-from transformers import T5ForConditionalGeneration, T5Tokenizer
-MODEL_NAME = 'cointegrated/rut5-base-absum'
-model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
-tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 
-def get_summ_text(
-    text, n_words=None, compression=None,
-    max_length=1000, num_beams=3, do_sample=False, repetition_penalty=10.0,
-    **kwargs
-):
-    if n_words:
-        text = '[{}] '.format(n_words) + text
-    elif compression:
-        text = '[{0:.1g}] '.format(compression) + text
-    x = tokenizer(text, return_tensors='pt', padding=True).to(model.device)
-    with torch.inference_mode():
-        out = model.generate(
-            **x,
-            max_length=max_length, num_beams=num_beams,
-            do_sample=do_sample, repetition_penalty=repetition_penalty,
-            **kwargs
-        )
-    return tokenizer.decode(out[0], skip_special_tokens=True)
+def get_summ_text(textForSumm):
+    tokenizer = T5Tokenizer.from_pretrained('d0rj/rut5-base-summ')
+    model = T5ForConditionalGeneration.from_pretrained('d0rj/rut5-base-summ').eval()
+
+    input_ids = tokenizer(textForSumm, return_tensors='pt').input_ids
+    outputs = model.generate(input_ids)
+    summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return summary
 
 
 st.header("Краткое содержание текста")
@@ -32,11 +19,10 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     clicked = st.button('Сжать текст!')
-
+def on_fill_click():
+    exampleText = 'Цифровизация – это социально-экономическая трансформация, которую вызовет массовое внедрение и усвоение новых технологий создания, обработки, анализа и передачи информации. Сельское хозяйство становится одним из основных потребителей цифровых технологий. Генерация большого объема данных разнообразными датчиками в теплицах, полях, фермах и других производственных площадках особенно актуализирует применение цифровых технологий анализа агроэкономических данных. Широкое применение инструментов и методов Data Science, машинного обучения, нейронных сетей в конечном счете позволит существенно повысить эффективность принимаемых управленческих решений в АПК.'
+    st.session_state.textInput = exampleText
 with col2:
-    def on_fill_click():
-        exampleText = 'Цифровизация – это социально-экономическая трансформация, которую вызовет массовое внедрение и усвоение новых технологий создания, обработки, анализа и передачи информации. Сельское хозяйство становится одним из основных потребителей цифровых технологий. Генерация большого объема данных разнообразными датчиками в теплицах, полях, фермах и других производственных площадках особенно актуализирует применение цифровых технологий анализа агроэкономических данных. Широкое применение инструментов и методов Data Science, машинного обучения, нейронных сетей в конечном счете позволит существенно повысить эффективность принимаемых управленческих решений в АПК.'
-        st.session_state.textInput = exampleText
     st.button("Заполнить поле", on_click=on_fill_click)
 
 with col3:
@@ -48,7 +34,6 @@ with col3:
     Цель данного проекта заключается в создании системы, которая уменьшит трудовые и временные затраты наставников на обучение и позволит ввести контроль за продвижением обучения сотрудников.'''
         st.session_state.textInput = exampleText
     st.button("Заполнить поле [2]", on_click=on_fill_click)
-
 
 if clicked:
     if len(text.strip()):
