@@ -13,7 +13,8 @@ def get_summ_text(textForSumm):
 
 
 st.header("Краткое содержание текста")
-st.subheader("(Summarization text)")
+st.subheader("(Summarization text) - model d0rj/rut5-base-summ")
+st.write('GitHub github.com/zhenikhovs/software_engineering_GZH, brunch model-2')
 text = st.text_area('Полный текст для сжатия:',  key='textInput')
 col1, col2, col3 = st.columns(3)
 
