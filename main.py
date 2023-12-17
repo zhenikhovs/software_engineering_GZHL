@@ -22,5 +22,5 @@ async def root():
 @app.get("/get_summary/")
 async def get_summary(text: str = ''):
     sum_text = get_summ_text(text)
-    return {"Summarized text": sum_text}
+    return {"summarized_text": sum_text}
 
