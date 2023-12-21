@@ -3,7 +3,7 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 app = FastAPI()
 
-# функция с суммаризацией
+# функция с суммаризациейs
 def get_summ_text(textForSumm):
     tokenizer = T5Tokenizer.from_pretrained('d0rj/rut5-base-summ')
     model = T5ForConditionalGeneration.from_pretrained('d0rj/rut5-base-summ').eval()
